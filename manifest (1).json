@@ -1,0 +1,26 @@
+{
+  "background_color": "#ffffff",
+  "description": "Api para buscar sitcoms",
+  "dir": "auto",
+  "display": "browser",
+  "name": "SitcomsAPI",
+  "orientation": "any",
+  "scope": "https://sitcomsapi.netlify.app",
+  "short_name": "sitcoms",
+  "start_url": "https://sitcomsapi.netlify.app",
+  "theme_color": "#ffffff",
+  "categories": [
+    "education",
+    "entertainment",
+    "utilities"
+  ],
+  "screenshots": [],
+  "icons": [],
+  "shortcuts": [],
+  "lang": "pt",
+  "display_override": [
+    "browser",
+    "standalone",
+    "window-controls-overlay"
+  ]
+}
