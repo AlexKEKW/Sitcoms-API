@@ -2,9 +2,12 @@
 <html lang="pt-br">
 
 <head>
+  <script src="js/sitcom-api.js" defer></script>
+  <script src="manifest.json" defer></script>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="description" content="Performance de SEO" />
   <meta name="theme-color" content="#ffffff"/>
   <title>Consulta de Sitcoms</title>
@@ -31,16 +34,18 @@
       border-radius: 10px;
       box-shadow: 2px 2px grey;
     }
+
+    .margin {
+      margin-top: 40px;
+    }
   </style>
 
   <link rel="stylesheet" href="assets/css/sitcom.css" />
   <link rel="stylesheet" href="assets/css/global.css" />
 
   <!--SCRIPTS-->
-  <script src="js/sitcom-api.js" defer></script>
-  <script src="js/main.js" defer></script>
-  <script src="manifest (1).json" defer></script>
-  <script src="site.webmanifest" defer></script>
+  <!-- <script src="js/sitcom-api.js" defer></script>
+  <script src="manifest.json" defer></script> -->
   <script defer>
     if (typeof navigator.serviceWorker !== 'undefined') {
       navigator.serviceWorker.register('sw.js')
@@ -146,6 +151,8 @@
     </div>
   </div>
 
+  <div class="text-center margin" id="snackbar">Uma nova versão está disponível! Clique <a id="reload">AQUI</a> para atualizar.</div>
+
   <!--BOOTSTRAP script-->
 
   <script>
@@ -159,60 +166,43 @@
       }
     });
 
-    // This is the service worker with the combined offline experience (Offline page + Offline copy of pages)
-
-    const CACHE = "pwabuilder-offline-page";
-
-    importScripts('https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js');
-
-    // TODO: replace the following with the correct offline fallback page i.e.: const offlineFallbackPage = "offline.html";
-    const offlineFallbackPage = "index.html";
-
-    self.addEventListener("message", (event) => {
-      if (event.data && event.data.type === "SKIP_WAITING") {
-        self.skipWaiting();
-      }
-    });
-
-    self.addEventListener('install', async (event) => {
-      event.waitUntil(
-        caches.open(CACHE)
-          .then((cache) => cache.add(offlineFallbackPage))
-      );
-    });
-
-    if (workbox.navigationPreload.isSupported()) {
-      workbox.navigationPreload.enable();
+    
+    let newWorker;
+    function showUpdateBar() {
+      let snackbar = document.getElementById('snackbar');
+      snackbar.className = 'show';
     }
-
-    workbox.routing.registerRoute(
-      new RegExp('/*'),
-      new workbox.strategies.StaleWhileRevalidate({
-        cacheName: CACHE
-      })
-    );
-
-    self.addEventListener('fetch', (event) => {
-      if (event.request.mode === 'navigate') {
-        event.respondWith((async () => {
-          try {
-            const preloadResp = await event.preloadResponse;
-
-            if (preloadResp) {
-              return preloadResp;
-            }
-
-            const networkResp = await fetch(event.request);
-            return networkResp;
-          } catch (error) {
-
-            const cache = await caches.open(CACHE);
-            const cachedResp = await cache.match(offlineFallbackPage);
-            return cachedResp;
-          }
-        })());
-      }
+    // The click event on the pop up notification
+    document.getElementById('reload').addEventListener('click', function () {
+      newWorker.postMessage({ action: 'skipWaiting' });
     });
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js').then(reg => {
+        reg.addEventListener('updatefound', () => {
+          // A wild service worker has appeared in reg.installing!
+          newWorker = reg.installing;
+          newWorker.addEventListener('statechange', () => {
+            // Has network.state changed?
+            switch (newWorker.state) {
+              case 'installed':
+                if (navigator.serviceWorker.controller) {
+                  // new update available
+                  showUpdateBar();
+                }
+                // No update available
+                break;
+            }
+          });
+        });
+      });
+      let refreshing;
+      navigator.serviceWorker.addEventListener('controllerchange', function () {
+        if (refreshing) return;
+        window.location.reload();
+        refreshing = true;
+      });
+    }
+    
 
   </script>
 </body>

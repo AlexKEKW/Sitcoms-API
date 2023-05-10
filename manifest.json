@@ -5,8 +5,8 @@
   "display": "browser",
   "name": "SitcomsAPI",
   "orientation": "any",
-  "scope": "https://sitcomsapi.netlify.app",
-  "short_name": "sitcoms",
+  "scope": "/",
+  "short_name": "sitcom",
   "start_url": "https://sitcomsapi.netlify.app",
   "theme_color": "#ffffff",
   "categories": [
