@@ -2,7 +2,7 @@
   "background_color": "#ffffff",
   "description": "Api para buscar sitcoms",
   "dir": "auto",
-  "display": "browser",
+  "display": "standalone",
   "name": "SitcomsAPI",
   "orientation": "any",
   "scope": "/",
@@ -30,10 +30,5 @@
   }
   ],
   "shortcuts": [],
-  "lang": "pt",
-  "display_override": [
-    "browser",
-    "standalone",
-    "window-controls-overlay"
-  ]
+  "lang": "pt"
 }
